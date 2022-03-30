@@ -136,7 +136,7 @@ function usePlayerState(videoRef: any) {
     };
 }
 
-const ShakaPlayerWrapper = ({manifest, license, subtitle}: PlayerProps) => {
+const ShakaPlayerDASHWrapper = ({manifest, license, subtitle}: PlayerProps) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
     // * States
@@ -154,11 +154,13 @@ const ShakaPlayerWrapper = ({manifest, license, subtitle}: PlayerProps) => {
     }, []);
 
     return (
-        <div className="player">
-            <h1>Player</h1>
-            <video ref={videoRef} width="640" onTimeUpdate={handleTimeUpdate}/>
+        <div className="DASHPlayer">
+            <h3>DASH</h3>
+            <video ref={videoRef} width="320" onTimeUpdate={handleTimeUpdate} controls={true}
+                   preload="none"
+            />
         </div>
     );
 };
 
-export default ShakaPlayerWrapper;
+export default ShakaPlayerDASHWrapper;
