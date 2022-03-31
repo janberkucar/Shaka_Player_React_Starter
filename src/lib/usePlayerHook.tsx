@@ -1,64 +1,66 @@
-import {MutableRefObject, useState} from "react";
+import {MutableRefObject, useEffect, useState} from "react";
 import {ShakaReactWrapperProps} from "../types";
-import Player from 'shaka-player'
+import shaka from 'shaka-player'
 import UseUIHook from "./useUIHook";
+import {SuperConfiguration} from "../types/SuperConfiguration.enum";
+import {streamingConfig} from "config/streamingConfig";
 
 const usePlayerHook = (
     videoReference: MutableRefObject<HTMLVideoElement>,
     uiContainerReference: MutableRefObject<HTMLDivElement>,
     props?: ShakaReactWrapperProps
 ) => {
-    const [player, setPlayer] = useState<Player | null>(null);
+    const [player, setPlayer] = useState<shaka.Player | null>(null);
     const ui = UseUIHook(player, videoReference, uiContainerReference, props);
-    
-    // React.useEffect(() => {
-    //     ShakaPolyfill.installAll();
-    //
-    //     const mainPlayer = new ShakaPlayer(videoRef.current);
-    //     setPlayer(mainPlayer);
-    //
-    //     return () => {
-    //         mainPlayer.destroy();
-    //     };
-    // }, []);
-    //
-    // React.useEffect(() => {
-    //     if (player && props.onLoad) {
-    //         props.onLoad({
-    //             player: player,
-    //             ui: ui,
-    //             videoElement: videoRef.current,
-    //         });
-    //     }
-    // }, [player]);
-    //
-    // React.useEffect(() => {
-    //     if (player && props.config) {
-    //         player.configure(props.config);
-    //     } else if (player && props.superConfig) {
-    //         switch (props.superConfig) {
-    //             case SuperConfig.STREAMING:
-    //                 player.configure(Configs.streamingConfig.player);
-    //                 break;
-    //             default:
-    //                 player.configure({});
-    //                 break;
-    //         }
-    //     }
-    // }, [player, props.config]);
-    //
-    // React.useEffect(() => {
-    //     if (player && props.src && ShakaPlayer.isBrowserSupported()) {
-    //         const initLoad = async () => {
-    //             try {
-    //                 await player.load(props.src);
-    //             } catch (e) {
-    //                 props.onPlayerError && props.onPlayerError(e);
-    //             }
-    //         };
-    //         initLoad();
-    //     }
-    // }, [player, props.src]);
+
+    useEffect(() => {
+        shaka.polyfill.installAll();
+
+        const mainPlayer = new shaka.Player(videoReference.current);
+        setPlayer(mainPlayer);
+
+        return () => {
+            mainPlayer.destroy();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (player && props.onLoad) {
+            props.onLoad({
+                player: player,
+                ui: ui,
+                videoElement: videoReference.current,
+            });
+        }
+    }, [player]);
+
+    useEffect(() => {
+        if (player && props.configuration) {
+            player.configure(props.configuration);
+        } else if (player && props.superConfiguration) {
+            switch (props.superConfiguration) {
+                case SuperConfiguration.STREAMING:
+                    player.configure(streamingConfig.player);
+                    break;
+                default:
+                    player.configure({});
+                    break;
+            }
+        }
+    }, [player, props.configuration]);
+
+    useEffect(() => {
+        if (player && props.sourceString && shaka.Player.isBrowserSupported()) {
+            const initLoad = async () => {
+                try {
+                    await player.load(props.sourceString);
+                } catch (e) {
+                    props.onPlayerError && props.onPlayerError(e);
+                }
+            };
+            initLoad();
+        }
+    }, [player, props.sourceString]);
 
     return {player, ui};
 }

@@ -13,6 +13,10 @@ export interface ShakaReactWrapperProps {
     children?: any;
     className?: string;
     playersClassName?: string;
+    license?: string;
+    manifest?: string;
+    subtitle?: string;
+    name?: string;
 
     onLoad?(data: PlayerReferences): void | undefined;
 

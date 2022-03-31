@@ -12,6 +12,7 @@ export type PlayerProps = {
     manifest: string;
     license: string;
     subtitle: string;
+    name?: string;
     type?: DrmType;
 };
 
@@ -136,7 +137,7 @@ function usePlayerState(videoRef: any) {
     };
 }
 
-const ShakaPlayerDASHWrapper = ({manifest, license, subtitle}: PlayerProps) => {
+const ShakaPlayerDASHWrapper = ({manifest, license, subtitle, name}: PlayerProps) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
     // * States
@@ -156,9 +157,8 @@ const ShakaPlayerDASHWrapper = ({manifest, license, subtitle}: PlayerProps) => {
     return (
         <div className="DASHPlayer">
             <h3>DASH</h3>
-            <video ref={videoRef} width="320" onTimeUpdate={handleTimeUpdate} controls={true}
-                   preload="none"
-            />
+            <h5>{name}</h5>
+            <video ref={videoRef} width="320" onTimeUpdate={handleTimeUpdate} controls={true} preload="none"/>
         </div>
     );
 };
